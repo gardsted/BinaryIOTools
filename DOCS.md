@@ -79,7 +79,8 @@ and when endContext() is called, it will be restored to the current position
  | endContext()
 ```
 
-Restore the index to the previous location where it was when beginContext() was called
+Restore the index to the previous location where it was when
+beginContext() was called
 
 <a name=".binaryiotools.IO.bool"></a>
 #### bool
@@ -190,6 +191,26 @@ set a dword
 ```
 
 set an unsigned dword
+
+<a name=".binaryiotools.IO.qword"></a>
+#### qword
+
+```python
+ | @qword.setter
+ | qword(qword)
+```
+
+set a qword
+
+<a name=".binaryiotools.IO.unsignedQword"></a>
+#### unsignedQword
+
+```python
+ | @unsignedQword.setter
+ | unsignedQword(unsignedQword)
+```
+
+set an unsigned qword
 
 <a name=".binaryiotools.IO.i8"></a>
 #### i8

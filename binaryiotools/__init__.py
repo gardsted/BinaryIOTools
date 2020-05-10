@@ -72,21 +72,34 @@ class IO:
 
 	def endContext(self):
 		"""
-		Restore the index to the previous location where it was when beginContext() was called
+		Restore the index to the previous location where it was when
+		beginContext() was called
 		"""
 		self.index = self._contexts.pop()
 
 	def _write(self, size, fmt, data):
-		"""
-		general formatted write
-		"""
+		"""	general formatted write	"""
 		if self.index + size >= len(self.data):
 			self.data.extend(bytearray((self.index + size) - len(self.data)))
 		try:
 			struct.pack_into(fmt, self.data, self.index, data)
 			self.index += size
-		except struct.error as e:
+		except (DeprecationWarning, struct.error):
 			raise Exception(type(data), fmt, size, data)
+
+	def _read(self, size, fmt):
+		"""	general formatted read """
+		if self.index + size >= len(self.data):
+			raise Exception("Out of bounds")
+		try:
+			data = struct.unpack(fmt, self.data[self.index:self.index + size])[0]
+		except (DeprecationWarning, struct.error):
+			raise Exception(str(fmt) + " " + str(size) + " " +
+			str(self.index) + ' ' + str(len(self.data)) + ' ' +
+			str(self.data[self.index:self.index + size]))
+		# Move the pointer forward
+		self.index += size
+		return data
 
 	@property
 	def bool(self):
@@ -222,15 +235,17 @@ class IO:
 
 	@qword.setter
 	def qword(self, qword):
+		""" set a qword """
 		self.i64 = qword
 
 	@property
 	def unsignedQword(self):
-		""" set an unsigned qword """
+		""" get an unsigned qword """
 		return self.u64
 
 	@unsignedQword.setter
 	def unsignedQword(self, unsignedQword):
+		""" set an unsigned qword """
 		self.u64 = unsignedQword
 
 	@property
@@ -282,8 +297,8 @@ class IO:
 	def u16(self):
 		""" get an uint16 """
 		if self.littleEndian:
-			return self.i16le
-		return self.i16be
+			return self.u16le
+		return self.u16be
 
 	@u16.setter
 	def u16(self, u16):
@@ -312,8 +327,8 @@ class IO:
 	def u32(self):
 		""" get a uint32 """
 		if self.littleEndian:
-			return self.i32le
-		return self.i32be
+			return self.u32le
+		return self.u32be
 
 	@u32.setter
 	def u32(self, u32):
@@ -342,8 +357,8 @@ class IO:
 	def u64(self):
 		""" get a uint64 """
 		if self.littleEndian:
-			return self.i64le
-		return self.i64be
+			return self.u64le
+		return self.u64be
 
 	@u64.setter
 	def u64(self, u64):
@@ -385,12 +400,8 @@ class IO:
 
 	@property
 	def u8be(self):
-		"""
-		read the next uint8 and advance the index
-		"""
-		d = struct.unpack('>B', self.data[self.index:self.index + 1])[0]
-		self.index += 1
-		return d
+		"""	read the next uint8 and advance the index """
+		return self._read(1, ">B")
 
 	@u8be.setter
 	def u8be(self, u8be):
@@ -399,12 +410,8 @@ class IO:
 
 	@property
 	def u8le(self):
-		"""
-		read the next uint8 and advance the index
-		"""
-		d = struct.unpack('<B', self.data[self.index:self.index + 1])[0]
-		self.index += 1
-		return d
+		"""	read the next uint8 and advance the index """
+		return self._read(1, "<B")
 
 	@u8le.setter
 	def u8le(self, u8le):
@@ -413,12 +420,8 @@ class IO:
 
 	@property
 	def i8le(self):
-		"""
-		read the next signed int8 and advance the index
-		"""
-		d = struct.unpack('<b', self.data[self.index:self.index + 1])[0]
-		self.index += 1
-		return d
+		"""	read the next signed int8 and advance the index """
+		return self._read(1, "<b")
 
 	@i8le.setter
 	def i8le(self, i8le):
@@ -427,12 +430,8 @@ class IO:
 
 	@property
 	def i8be(self):
-		"""
-		read the next signed int8 and advance the index
-		"""
-		d = struct.unpack('>b', self.data[self.index:self.index + 1])[0]
-		self.index += 1
-		return d
+		"""	read the next signed int8 and advance the index """
+		return self._read(1, ">b")
 
 	@i8be.setter
 	def i8be(self, i8be):
@@ -441,12 +440,8 @@ class IO:
 
 	@property
 	def u16be(self):
-		"""
-		read the next uint16 and advance the index
-		"""
-		d = struct.unpack('>H', self.data[self.index:self.index + 2])[0]
-		self.index += 2
-		return d
+		"""	read the next uint16 and advance the index """
+		return self._read(2, ">H")
 
 	@u16be.setter
 	def u16be(self, u16be):
@@ -455,12 +450,8 @@ class IO:
 
 	@property
 	def u16le(self):
-		"""
-		read the next uint16 and advance the index
-		"""
-		d = struct.unpack('<H', self.data[self.index:self.index + 2])[0]
-		self.index += 2
-		return d
+		"""	read the next uint16 and advance the index """
+		return self._read(2, "<H")
 
 	@u16le.setter
 	def u16le(self, u16le):
@@ -469,12 +460,8 @@ class IO:
 
 	@property
 	def i16le(self):
-		"""
-		read the next signed int16 and advance the index
-		"""
-		d = struct.unpack('<h', self.data[self.index:self.index + 2])[0]
-		self.index += 2
-		return d
+		"""	read the next signed int16 and advance the index """
+		return self._read(2, "<h")
 
 	@i16le.setter
 	def i16le(self, i16le):
@@ -483,12 +470,8 @@ class IO:
 
 	@property
 	def i16be(self):
-		"""
-		read the next signed int16 and advance the index
-		"""
-		d = struct.unpack('>h', self.data[self.index:self.index + 2])[0]
-		self.index += 2
-		return d
+		""" read the next signed int16 and advance the index """
+		return self._read(2, ">h")
 
 	@i16be.setter
 	def i16be(self, i16be):
@@ -497,12 +480,8 @@ class IO:
 
 	@property
 	def u32be(self):
-		"""
-		read the next uint32 and advance the index
-		"""
-		d = struct.unpack('>I', self.data[self.index:self.index + 4])[0]
-		self.index += 4
-		return d
+		"""	read the next uint32 and advance the index """
+		return self._read(4, ">I")
 
 	@u32be.setter
 	def u32be(self, u32be):
@@ -511,12 +490,8 @@ class IO:
 
 	@property
 	def u32le(self):
-		"""
-		read the next uint32 and advance the index
-		"""
-		d = struct.unpack('<I', self.data[self.index:self.index + 4])[0]
-		self.index += 4
-		return d
+		"""	read the next uint32 and advance the index """
+		return self._read(4, "<I")
 
 	@u32le.setter
 	def u32le(self, u32le):
@@ -525,12 +500,8 @@ class IO:
 
 	@property
 	def i32le(self):
-		"""
-		read the next signed int32 and advance the index
-		"""
-		d = struct.unpack('<i', self.data[self.index:self.index + 4])[0]
-		self.index += 4
-		return d
+		"""	read the next signed int32 and advance the index """
+		return self._read(4, "<i")
 
 	@i32le.setter
 	def i32le(self, i32le):
@@ -539,17 +510,8 @@ class IO:
 
 	@property
 	def i32be(self):
-		"""
-		read the next signed int32 and advance the index
-		"""
-		try:
-			d = struct.unpack('>i', self.data[self.index:self.index + 4])[0]
-		except Exception as _e:
-			raise Exception(
-			str(self.index) + ' ' + str(len(self.data)) + ' ' +
-			str(self.data[self.index:self.index + 4]))
-		self.index += 4
-		return d
+		"""	read the next signed int32 and advance the index """
+		return self._read(4, ">i")
 
 	@i32be.setter
 	def i32be(self, i32be):
@@ -558,12 +520,8 @@ class IO:
 
 	@property
 	def u64be(self):
-		"""
-		read the next uint64 and advance the index
-		"""
-		d = struct.unpack('>Q', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		"""	read the next uint64 and advance the index """
+		return self._read(8, ">Q")
 
 	@u64be.setter
 	def u64be(self, u64be):
@@ -572,12 +530,8 @@ class IO:
 
 	@property
 	def u64le(self):
-		"""
-		read the next uint64 and advance the index
-		"""
-		d = struct.unpack('<Q', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		"""	read the next uint64 and advance the index """
+		return self._read(8, "<Q")
 
 	@u64le.setter
 	def u64le(self, u64le):
@@ -586,27 +540,18 @@ class IO:
 
 	@property
 	def i64le(self):
-		"""
-		read the next signed int64 and advance the index
-		"""
-		d = struct.unpack('<q', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		""" read the next signed int64 and advance the index """
+		return self._read(8, "<q")
 
 	@i64le.setter
 	def i64le(self, i64le):
 		""" set the int64 """
 		self._write(8, '<q', i64le)
-		self.index += 8
 
 	@property
 	def i64be(self):
-		"""
-		read the next signed int64 and advance the index
-		"""
-		d = struct.unpack('>q', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		"""	read the next signed int64 and advance the index """
+		return self._read(8, ">q")
 
 	@i64be.setter
 	def i64be(self, i64be):
@@ -635,12 +580,8 @@ class IO:
 
 	@property
 	def float32be(self):
-		"""
-		read the next 32 bit float and advance the index
-		"""
-		d = struct.unpack('>f', self.data[self.index:self.index + 4])[0]
-		self.index += 4
-		return d
+		"""	read the next 32 bit float and advance the index """
+		return self._read(4, ">f")
 
 	@float32be.setter
 	def float32be(self, float32be):
@@ -649,12 +590,8 @@ class IO:
 
 	@property
 	def float32le(self):
-		"""
-		read the next 32 bit float and advance the index
-		"""
-		d = struct.unpack('<f', self.data[self.index:self.index + 4])[0]
-		self.index += 4
-		return d
+		"""	read the next 32 bit float and advance the index """
+		return self._read(4, "<f")
 
 	@float32le.setter
 	def float32le(self, float32le):
@@ -663,12 +600,8 @@ class IO:
 
 	@property
 	def float64be(self):
-		"""
-		read the next 64 bit float and advance the index
-		"""
-		d = struct.unpack('>d', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		"""	read the next 64 bit float and advance the index """
+		return self._read(8, ">d")
 
 	@float64be.setter
 	def float64be(self, float64be):
@@ -677,12 +610,8 @@ class IO:
 
 	@property
 	def float64le(self):
-		"""
-		read the next 64 bit float and advance the index
-		"""
-		d = struct.unpack('<d', self.data[self.index:self.index + 8])[0]
-		self.index += 8
-		return d
+		"""	read the next 64 bit float and advance the index """
+		return self._read(8, "<d")
 
 	@float64le.setter
 	def float64le(self, float64le):

@@ -21,7 +21,7 @@ if os.path.exists(readme_path):
 setup(
     long_description=readme,
     name='binaryiotools',
-    version='2020',
+    version='2020.1',
     description='Does boilerplate things like reading the next uint32 from a file or binary stream',
     python_requires='==3.*,>=3.4.0',
     project_urls={
