@@ -38,10 +38,8 @@ For a file starting with the bytes:
 
 The values for width and height would be 200, 400
 
-## Documentation
-See the [DOCS](DOCS.md) for a full list of functions
-
 - [Documentation](#documentation)
+- [LGPLv3?](#lgplv3)
 - [Install With PIP](#install-with-pip)
 - [Language information](#language-information)
 	- [Built for](#built-for)
@@ -65,6 +63,15 @@ See the [DOCS](DOCS.md) for a full list of functions
 	- [Code of Conduct](#code-of-conduct)
 	- [Contributing](#contributing)
 	- [Security](#security)
+
+## Documentation
+See the [DOCS](DOCS.md) for a full list of functions
+
+## LGPLv3?
+This code is slightly modified from
+https://github.com/TheHeadlessSourceMan/gimpFormats/blob/master/binaryIO.py
+(https://github.com/TheHeadlessSourceMan/gimpFormats binaryIO.py)
+which is under LGPLv3
 
 ## Install With PIP
 
