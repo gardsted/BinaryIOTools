@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "binaryiotools"
-version = "2020.1"
+version = "2020.1.1"
 description = "Does boilerplate things like reading the next uint32 from a file or binary stream"
 authors = ["FredHappyface"]
 classifiers = [

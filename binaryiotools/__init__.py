@@ -89,8 +89,6 @@ class IO:
 
 	def _read(self, size, fmt):
 		"""	general formatted read """
-		if self.index + size >= len(self.data):
-			raise Exception("Out of bounds")
 		try:
 			data = struct.unpack(fmt, self.data[self.index:self.index + size])[0]
 		except (DeprecationWarning, struct.error):
