@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "binaryiotools"
-version = "2020.1.1"
+version = "2020.2.0"
 description = "Does boilerplate things like reading the next uint32 from a file or binary stream"
 authors = ["FredHappyface"]
 classifiers = [
@@ -11,9 +11,6 @@ classifiers = [
 	"Natural Language :: English",
 	"Operating System :: OS Independent",
 	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.4",
-	"Programming Language :: Python :: 3.5",
-	"Programming Language :: Python :: 3.6",
 	"Programming Language :: Python :: 3.7",
 	"Programming Language :: Python :: 3.8",
 	"Programming Language :: Python :: Implementation :: CPython",
@@ -26,7 +23,7 @@ documentation = "https://github.com/FHPythonUtils/BinaryIOTools/blob/master/READ
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.4"
+python = "^3.7"
 
 [tool.dephell.main]
 from = "pyproject.toml"
