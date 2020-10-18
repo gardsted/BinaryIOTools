@@ -130,6 +130,8 @@ class IO:
 		if self.boolSize == 64:
 			return self.bool64
 		raise Exception("Unknown bool size " + str(self.boolSize))
+	
+	bool = property(boolean)
 
 	@boolean.setter
 	def boolean(self, ioBool: Union[str, bytearray, IO, int, float]):
@@ -144,6 +146,8 @@ class IO:
 			self.bool64 = ioBool
 		else:
 			raise Exception("Unknown bool size " + str(self.boolSize))
+	
+	bool = boolean.setter(boolean)
 
 	@property
 	def bool8(self) -> Union[str, bytearray, IO, int, float]:
